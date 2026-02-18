@@ -13,6 +13,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const comparePages: MetadataRoute.Sitemap = platforms.flatMap((a, i) =>
+    platforms.slice(i + 1).map((b) => ({
+      url: `${siteUrl}/compare/${a.id}-vs-${b.id}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    })),
+  );
+
   return [
     {
       url: siteUrl,
@@ -21,5 +30,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     ...platformPages,
+    ...comparePages,
   ];
 }
