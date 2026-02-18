@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AdSlot from "../../components/AdSlot";
 import { TrackedLink } from "../../components/tracked-link";
 import { getPlatformBestBadges } from "../../data/recommendation";
 import { platforms } from "../../data/platforms";
@@ -186,7 +187,7 @@ export default async function ComparePage({ params }: PageProps) {
           </p>
         </section>
 
-        <div className="ad-slot-placeholder" />
+        <AdSlot id={`compare-${pair.slug}-hero`} label="Compare Hero Ad Slot" />
 
         <section className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900 p-4">
           <table className="min-w-full text-left text-sm">
@@ -232,7 +233,7 @@ export default async function ComparePage({ params }: PageProps) {
           </article>
         </section>
 
-        <div className="ad-slot-placeholder" />
+        <AdSlot id={`compare-${pair.slug}-mid`} label="Compare Mid Content Ad Slot" />
 
         <section className="rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-6">
           <h2 className="text-2xl font-semibold">Final Recommendation Block</h2>
@@ -292,7 +293,7 @@ export default async function ComparePage({ params }: PageProps) {
           </div>
         </section>
 
-        <div className="ad-slot-placeholder" />
+        <AdSlot id={`compare-${pair.slug}-bottom`} label="Compare Bottom Ad Slot" />
       </div>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />

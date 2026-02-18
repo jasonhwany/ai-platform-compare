@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AdSlot from "../../components/AdSlot";
 import { TrackedExternalLink, TrackedLink } from "../../components/tracked-link";
 import { getPlatformBestBadges } from "../../data/recommendation";
 import { platforms } from "../../data/platforms";
@@ -204,7 +205,7 @@ export default async function PlatformDetailPage({ params }: PageProps) {
           </p>
         </section>
 
-        <div className="ad-slot-placeholder" />
+        <AdSlot id={`platform-${platform.id}-hero`} label="Platform Hero Ad Slot" />
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-semibold">Core Features Explained</h2>
@@ -223,7 +224,7 @@ export default async function PlatformDetailPage({ params }: PageProps) {
           </ul>
         </section>
 
-        <div className="ad-slot-placeholder" />
+        <AdSlot id={`platform-${platform.id}-mid`} label="Platform Mid Content Ad Slot" />
 
         <section className="grid gap-6 md:grid-cols-2">
           <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
@@ -294,7 +295,7 @@ export default async function PlatformDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        <div className="ad-slot-placeholder" />
+        <AdSlot id={`platform-${platform.id}-bottom`} label="Platform Bottom Ad Slot" />
       </div>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />

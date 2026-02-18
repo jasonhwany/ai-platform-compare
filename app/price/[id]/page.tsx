@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AdSlot from "../../components/AdSlot";
 import { TrackedExternalLink, TrackedLink } from "../../components/tracked-link";
 import { getPlatformBestBadges } from "../../data/recommendation";
 import { platforms } from "../../data/platforms";
@@ -137,7 +138,7 @@ export default async function PricePage({ params }: PageProps) {
           <p className="mt-4 text-slate-300">실제 월간 비용은 요청량, 고급 기능 비율, 팀 규모에 따라 달라집니다.</p>
         </section>
 
-        <div className="ad-slot-placeholder" />
+        <AdSlot id={`price-${platform.id}-hero`} label="Price Hero Ad Slot" />
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-semibold">Breakdown of Plan Tiers</h2>
@@ -157,7 +158,7 @@ export default async function PricePage({ params }: PageProps) {
           </ul>
         </section>
 
-        <div className="ad-slot-placeholder" />
+        <AdSlot id={`price-${platform.id}-mid`} label="Price Mid Content Ad Slot" />
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-semibold">Pricing FAQ</h2>
@@ -223,7 +224,7 @@ export default async function PricePage({ params }: PageProps) {
           </div>
         </section>
 
-        <div className="ad-slot-placeholder" />
+        <AdSlot id={`price-${platform.id}-bottom`} label="Price Bottom Ad Slot" />
       </div>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
