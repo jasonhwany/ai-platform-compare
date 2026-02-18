@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { TrackedLink } from "../../components/tracked-link";
 import { getPlatformBestBadges } from "../../data/recommendation";
 import { platforms } from "../../data/platforms";
 
@@ -240,18 +241,28 @@ export default async function ComparePage({ params }: PageProps) {
             Recommended: 두 플랫폼 모두 파일럿 테스트 후, 비용/품질 점수가 높은 쪽으로 즉시 전환하세요.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
-            <Link
+            <TrackedLink
               href={`/price/${pair.a.id}`}
               className="rounded-lg bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-200"
+              payload={{
+                target: `/price/${pair.a.id}`,
+                platformId: pair.a.id,
+                compareSlug: pair.slug,
+              }}
             >
               Compare Pricing for {pair.a.name}
-            </Link>
-            <Link
+            </TrackedLink>
+            <TrackedLink
               href={`/price/${pair.b.id}`}
               className="rounded-lg bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-200"
+              payload={{
+                target: `/price/${pair.b.id}`,
+                platformId: pair.b.id,
+                compareSlug: pair.slug,
+              }}
             >
               Compare Pricing for {pair.b.name}
-            </Link>
+            </TrackedLink>
           </div>
         </section>
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { TrackedExternalLink, TrackedLink } from "../../components/tracked-link";
 import { getPlatformBestBadges } from "../../data/recommendation";
 import { platforms } from "../../data/platforms";
 
@@ -172,12 +173,13 @@ export default async function PlatformDetailPage({ params }: PageProps) {
                 Use the recommender wizard to get a stack matched to your goal and budget.
               </p>
             </div>
-            <Link
+            <TrackedLink
               href="/recommend"
               className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-cyan-200"
+              payload={{ target: "/recommend", platformId: platform.id }}
             >
               Try AI Stack Recommender
-            </Link>
+            </TrackedLink>
           </div>
         </section>
 
@@ -249,20 +251,20 @@ export default async function PlatformDetailPage({ params }: PageProps) {
             Recommended: {platform.name}를 핵심 워크플로우 1개에 먼저 적용하고, 성과 확인 후 확장하세요.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link
+            <TrackedLink
               href={`/price/${platform.id}`}
               className="inline-flex items-center rounded-lg bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-200"
+              payload={{ target: `/price/${platform.id}`, platformId: platform.id }}
             >
               Start with Pricing Plan
-            </Link>
-            <a
+            </TrackedLink>
+            <TrackedExternalLink
               href={platform.links.website}
-              target="_blank"
-              rel="noreferrer"
               className="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-bold text-slate-100 hover:border-slate-500"
+              payload={{ target: platform.links.website, platformId: platform.id }}
             >
               Launch Free Trial on {platform.name}
-            </a>
+            </TrackedExternalLink>
           </div>
         </section>
 

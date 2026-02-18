@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   type BudgetLevel,
   type PrimaryGoal,
@@ -10,6 +10,7 @@ import {
   getPlatformBestBadges,
 } from "../data/recommendation";
 import { platforms } from "../data/platforms";
+import { track } from "../lib/track";
 
 const goals: PrimaryGoal[] = ["Blog", "Video", "Design", "Automation", "Research"];
 const budgets: BudgetLevel[] = ["Free", "Under $20", "Flexible"];
@@ -25,6 +26,21 @@ export default function RecommendPage() {
     if (!goal || !budget || !skill) return [];
     return getRecommendedStacks(goal, budget, skill);
   }, [goal, budget, skill]);
+  const lastTrackedSignatureRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (step !== 4 || !goal || !budget || !skill || recommendations.length === 0) return;
+    const signature = `${goal}-${budget}-${skill}-${recommendations.map((item) => item.id).join(",")}`;
+    if (lastTrackedSignatureRef.current === signature) return;
+    lastTrackedSignatureRef.current = signature;
+
+    track("reco_complete", {
+      goal,
+      budget,
+      skill,
+      stackIds: recommendations.map((item) => item.id),
+    });
+  }, [step, goal, budget, skill, recommendations]);
 
   const reset = () => {
     setStep(1);
@@ -147,6 +163,16 @@ export default function RecommendPage() {
                     <Link
                       href={stack.cta.href}
                       className="rounded-lg bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-200"
+                      onClick={() => {
+                        track("reco_cta_click", {
+                          goal,
+                          budget,
+                          skill,
+                          stackIds: recommendations.map((item) => item.id),
+                          recommendationId: stack.id,
+                          target: stack.cta.href,
+                        });
+                      }}
                     >
                       {stack.cta.label}
                     </Link>

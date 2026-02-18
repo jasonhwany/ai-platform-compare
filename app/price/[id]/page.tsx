@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { TrackedExternalLink, TrackedLink } from "../../components/tracked-link";
 import { getPlatformBestBadges } from "../../data/recommendation";
 import { platforms } from "../../data/platforms";
 
@@ -177,20 +178,23 @@ export default async function PricePage({ params }: PageProps) {
             Recommended: {platform.name}는 무료 검증 후 유료 확장하는 단계형 도입 전략에 가장 적합합니다.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
-            <Link
+            <TrackedLink
               href={`/compare/${relatedComparePages[0]?.slug ?? `${platform.id}-vs-openai`}`}
               className="rounded-lg bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-200"
+              payload={{
+                target: `/compare/${relatedComparePages[0]?.slug ?? `${platform.id}-vs-openai`}`,
+                platformId: platform.id,
+              }}
             >
               Compare Before You Subscribe
-            </Link>
-            <a
+            </TrackedLink>
+            <TrackedExternalLink
               href={platform.links.website}
-              target="_blank"
-              rel="noreferrer"
               className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-bold text-slate-100 hover:border-slate-500"
+              payload={{ target: platform.links.website, platformId: platform.id }}
             >
               Unlock Latest {platform.name} Deals
-            </a>
+            </TrackedExternalLink>
           </div>
         </section>
 
