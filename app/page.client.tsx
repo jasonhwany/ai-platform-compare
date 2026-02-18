@@ -1,18 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import AdSlot from "./components/AdSlot";
 import { providers } from "./data/providers";
 import { getPlatformBestBadges } from "./data/recommendation";
 import {
+  onBestValueBadgeRender,
   onClickCompare,
   onClickPricingLink,
   onCopyLink,
   onOpenRecommend,
   onSelectProvider,
+  onValueScoreView,
 } from "./lib/events";
+import { getBestValueProviderId, getProviderValueScore } from "./lib/value-score";
 
 const MAX_SELECTION = 3;
 const STORAGE_KEY = "compareProviders";
@@ -214,6 +217,12 @@ function parseCompareParam(value: string | null): string[] {
 export default function HomeClient() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [copyLabel, setCopyLabel] = useState("링크 복사");
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [hasPassedScrollThreshold, setHasPassedScrollThreshold] = useState(false);
+
+  const bestValueProviderId = useMemo(() => getBestValueProviderId(providers), []);
+  const trackedScoreIdsRef = useRef<string[]>([]);
+  const trackedBestBadgeRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -244,6 +253,68 @@ export default function HomeClient() {
     if (typeof window === "undefined") return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedIds));
   }, [selectedIds]);
+
+  useEffect(() => {
+    const visibleIds = selectedIds.length > 0 ? selectedIds : providers.map((provider) => provider.id);
+    const key = visibleIds.join(",");
+    if (trackedScoreIdsRef.current.join(",") === key) return;
+    trackedScoreIdsRef.current = visibleIds;
+
+    onValueScoreView({
+      providerIds: visibleIds,
+      scores: visibleIds.map((id) => {
+        const provider = providers.find((item) => item.id === id);
+        return provider ? getProviderValueScore(provider).score10 : null;
+      }),
+    });
+  }, [selectedIds]);
+
+  useEffect(() => {
+    if (!bestValueProviderId || trackedBestBadgeRef.current) return;
+    trackedBestBadgeRef.current = true;
+    onBestValueBadgeRender({ providerId: bestValueProviderId });
+  }, [bestValueProviderId]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.innerWidth < 768) return;
+
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const resetIdleTimer = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        if (hasPassedScrollThreshold) {
+          setShowExitModal(true);
+        }
+      }, 10_000);
+    };
+
+    const onScroll = () => {
+      const scrollY = window.scrollY;
+      const maxScrollable = document.documentElement.scrollHeight - window.innerHeight;
+      if (maxScrollable <= 0) return;
+      const ratio = scrollY / maxScrollable;
+      if (ratio >= 0.7) setHasPassedScrollThreshold(true);
+      resetIdleTimer();
+    };
+
+    const onActivity = () => resetIdleTimer();
+
+    resetIdleTimer();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("mousemove", onActivity, { passive: true });
+    window.addEventListener("keydown", onActivity);
+    window.addEventListener("click", onActivity);
+
+    return () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("mousemove", onActivity);
+      window.removeEventListener("keydown", onActivity);
+      window.removeEventListener("click", onActivity);
+    };
+  }, [hasPassedScrollThreshold]);
 
   const selectedProviders = useMemo(
     () => selectedIds.map((id) => providers.find((provider) => provider.id === id)).filter(Boolean) as Provider[],
@@ -286,7 +357,7 @@ export default function HomeClient() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen bg-slate-950 pb-24 text-slate-100">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-10 md:px-10">
         <header className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 shadow-2xl shadow-slate-950/40">
           <p className="text-sm font-medium uppercase tracking-widest text-emerald-400">AI 플랫폼 비교</p>
@@ -339,6 +410,8 @@ export default function HomeClient() {
               const selected = selectedIds.includes(provider.id);
               const selectionLocked = !selected && selectedIds.length >= MAX_SELECTION;
               const bestBadges = getPlatformBestBadges(provider.id);
+              const value = getProviderValueScore(provider);
+              const isBestValue = provider.id === bestValueProviderId;
 
               return (
                 <article
@@ -367,6 +440,11 @@ export default function HomeClient() {
                           {badge}
                         </span>
                       ))}
+                      {isBestValue && (
+                        <span className="rounded-full bg-emerald-500/20 px-2.5 py-1 text-xs font-semibold text-emerald-200 ring-1 ring-emerald-300/40">
+                          Best Value
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -382,6 +460,16 @@ export default function HomeClient() {
                       ))}
                     </div>
                   )}
+
+                  <div className="mt-4 rounded-lg border border-slate-700 bg-slate-950 p-3">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-300">Value Score</span>
+                      <span className="font-bold text-emerald-300">{value.score10}/10</span>
+                    </div>
+                    <div className="mt-2 h-2 rounded-full bg-slate-800">
+                      <div className="h-2 rounded-full bg-emerald-400" style={{ width: `${Math.min(100, (value.score10 / 10) * 100)}%` }} />
+                    </div>
+                  </div>
 
                   <p className="mt-4 text-sm text-slate-300">
                     <span className="font-medium text-slate-100">카테고리:</span> {provider.category_tags.join(", ")}
@@ -413,6 +501,8 @@ export default function HomeClient() {
           </div>
         </section>
 
+        <AdSlot id="home-provider-selection-slot" label="Home Selection Ad Slot" />
+
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-xl font-semibold">실시간 비교 테이블</h2>
@@ -442,7 +532,7 @@ export default function HomeClient() {
                     </tr>
                   </thead>
                   <tbody>
-                    {groups.map((group) => (
+                    {groups.map((group, groupIndex) => (
                       <Fragment key={`group-${group.title}`}>
                         <tr className="bg-slate-800/60 text-slate-100">
                           <td className="px-3 py-2 font-semibold" colSpan={4}>{group.title}</td>
@@ -457,6 +547,13 @@ export default function HomeClient() {
                             ))}
                           </tr>
                         ))}
+                        {groupIndex === 1 && (
+                          <tr>
+                            <td colSpan={4} className="px-2 py-4">
+                              <AdSlot id="home-between-categories-slot" label="Home Mid Comparison Ad Slot" className="min-h-[96px]" />
+                            </td>
+                          </tr>
+                        )}
                       </Fragment>
                     ))}
                   </tbody>
@@ -464,31 +561,69 @@ export default function HomeClient() {
               </div>
 
               <div className="grid gap-4 md:hidden">
-                {groups.map((group) => (
-                  <section key={`mobile-${group.title}`} className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-                    <h3 className="text-sm font-semibold text-slate-100">{group.title}</h3>
-                    <div className="mt-3 grid gap-3">
-                      {selectedProviders.map((provider) => (
-                        <article key={`${group.title}-${provider.id}`} className="rounded-lg border border-slate-700 bg-slate-900 p-3">
-                          <p className="text-sm font-semibold text-emerald-300">{provider.name}</p>
-                          <div className="mt-2 space-y-2 text-xs text-slate-300">
-                            {group.rows.map((row) => (
-                              <div key={`${provider.id}-${row.key}`} className="grid grid-cols-[110px_1fr] gap-2">
-                                <span className="text-slate-400">{row.label}</span>
-                                <div>{row.getValue(provider)}</div>
-                              </div>
-                            ))}
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  </section>
+                {groups.map((group, groupIndex) => (
+                  <Fragment key={`mobile-${group.title}`}>
+                    <section className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                      <h3 className="text-sm font-semibold text-slate-100">{group.title}</h3>
+                      <div className="mt-3 grid gap-3">
+                        {selectedProviders.map((provider) => (
+                          <article key={`${group.title}-${provider.id}`} className="rounded-lg border border-slate-700 bg-slate-900 p-3">
+                            <p className="text-sm font-semibold text-emerald-300">{provider.name}</p>
+                            <div className="mt-2 space-y-2 text-xs text-slate-300">
+                              {group.rows.map((row) => (
+                                <div key={`${provider.id}-${row.key}`} className="grid grid-cols-[110px_1fr] gap-2">
+                                  <span className="text-slate-400">{row.label}</span>
+                                  <div>{row.getValue(provider)}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
+                    {groupIndex === 1 && (
+                      <AdSlot id="home-between-categories-mobile-slot" label="Home Mid Comparison Ad Slot" className="min-h-[90px]" />
+                    )}
+                  </Fragment>
                 ))}
               </div>
             </>
           )}
         </section>
+
+        <footer className="text-center text-xs text-slate-500">
+          Last verified on: 데이터 필드 기준 | Data source: Official website | We independently verify pricing monthly.
+        </footer>
       </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-800 bg-slate-950/95 p-2 md:hidden">
+        <AdSlot id="home-mobile-sticky-slot" label="Mobile Sticky Ad Slot" className="min-h-[72px]" />
+      </div>
+
+      {showExitModal && (
+        <div className="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 p-4 md:flex">
+          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6">
+            <h2 className="text-xl font-bold">페이지를 나가기 전에</h2>
+            <p className="mt-2 text-slate-300">상위 3개 도구를 바로 비교해 최적의 조합을 찾으세요.</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link
+                href="/"
+                className="rounded-lg bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-200"
+                onClick={() => setShowExitModal(false)}
+              >
+                지금 바로 비교하기
+              </Link>
+              <button
+                type="button"
+                className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-semibold"
+                onClick={() => setShowExitModal(false)}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
