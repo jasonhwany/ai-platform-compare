@@ -71,17 +71,36 @@ export default async function PricePage({ params }: PageProps) {
     .slice(0, 3);
 
   const relatedArticles = [
-    { href: `/platform/${platform.id}`, label: `${platform.name} 플랫폼 상세` },
+    { href: `/platform/${platform.id}`, label: `${platform.name} 플랫폼 상세 리뷰` },
     ...relatedComparePages.slice(0, 2).map((item) => ({
       href: `/compare/${item.slug}`,
-      label: `${item.label} 비교 글`,
+      label: `${item.label} 비용 비교`,
     })),
   ];
 
-  const useCases = [
-    "개인/소규모 팀: 무료 플랜 기반으로 초기 검증 후 선택적으로 유료 전환",
-    "성장 단계 스타트업: 기능별 모델 라우팅으로 성능과 단가를 동시에 관리",
-    "엔터프라이즈 파일럿: 부서별 사용량 상한과 알림으로 비용 폭증 리스크 차단",
+  const planTiers = [
+    {
+      tier: "Free / Trial",
+      summary: "기능 검증과 소규모 테스트에 적합",
+      details: "요청 한도나 고급 기능 제한이 존재하므로 프로덕션 운영보다는 파일럿 검증 용도로 권장됩니다.",
+    },
+    {
+      tier: "Pro / Team",
+      summary: "일반적인 실무 운영에 적합",
+      details: "협업 기능과 사용량 확장이 가능하며, 팀 단위 업무 자동화에 필요한 안정성이 확보됩니다.",
+    },
+    {
+      tier: "Business / Enterprise",
+      summary: "대규모 트래픽 및 보안 정책 요구에 적합",
+      details: "관리 기능, 보안 옵션, 계약 기반 지원을 포함해 장기 운영 리스크를 줄이는 구조로 설계됩니다.",
+    },
+  ];
+
+  const discountStrategies = [
+    "초기에는 무료 플랜으로 고정 사용량을 측정한 뒤, 필요한 기능만 유료 전환해 낭비를 줄입니다.",
+    "요청 복잡도를 분리해 단순 작업은 저비용 모델로 라우팅하고 고난도 작업만 상위 모델을 사용합니다.",
+    "월간 예산 상한과 경고 알림을 함께 설정해 트래픽 급증 구간에서 과금 폭증을 예방합니다.",
+    "연간 결제, 파트너 크레딧, 팀 계약 할인을 정기적으로 점검해 실효 단가를 낮춥니다.",
   ];
 
   const breadcrumbSchema = {
@@ -104,43 +123,45 @@ export default async function PricePage({ params }: PageProps) {
     ],
   };
 
+  const faqItems = [
+    {
+      question: `${platform.name} 무료 플랜은 어디까지 사용할 수 있나요?`,
+      answer:
+        "대부분 기본 기능 검증은 가능하지만, 요청량 상한과 고급 기능 제한이 있어 운영 단계에서는 유료 플랜 검토가 필요합니다.",
+    },
+    {
+      question: `${platform.name}에서 가장 먼저 비용이 증가하는 지점은 어디인가요?`,
+      answer:
+        "일반적으로 고성능 모델 사용 비율과 호출량 증가가 비용 상승의 핵심 요인이며, 팀 사용자가 늘면 관리비용도 함께 커집니다.",
+    },
+    {
+      question: `${platform.name} 요금제를 선택할 때 가장 중요한 기준은 무엇인가요?`,
+      answer:
+        "예상 트래픽, 품질 요구 수준, 협업 인원 수를 먼저 정의한 뒤 그 기준을 만족하는 최저 플랜부터 시작하는 전략이 안전합니다.",
+    },
+    {
+      question: `${platform.name} 비용을 줄이는 실전 전략은 무엇인가요?`,
+      answer:
+        "모델 라우팅, 요청 캐싱, 프롬프트 최적화, 월간 예산 알림을 결합하면 동일 품질에서 총비용을 효과적으로 낮출 수 있습니다.",
+    },
+    {
+      question: `${platform.name}와 경쟁 서비스 가격 비교는 어떻게 해야 하나요?`,
+      answer:
+        "동일한 업무 시나리오를 기준으로 요청당 비용, 월 고정비, 부가 기능 비용을 동시에 비교해야 정확한 판단이 가능합니다.",
+    },
+  ];
+
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `${platform.name} 무료 플랜은 어떤 한계가 있나요?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "요청량, 고급 기능 접근, 팀 관리 기능이 제한되는 경우가 많아 운영 단계에서는 유료 플랜 검토가 필요합니다.",
-        },
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
       },
-      {
-        "@type": "Question",
-        name: `${platform.name} 유료 플랜으로 전환해야 하는 기준은 무엇인가요?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "트래픽 증가, 응답 품질 요구, 팀 협업 기능 필요성이 커질 때 유료 플랜 전환이 합리적입니다.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: `${platform.name}와 경쟁 플랫폼 가격을 어떻게 비교하면 좋나요?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "동일한 트래픽 시나리오에서 요청당 비용, 월 고정비, 기능 포함 범위를 함께 비교하면 정확합니다.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: `${platform.name} 비용을 낮추는 실전 방법은 무엇인가요?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "모델 라우팅, 프롬프트 최적화, 사용량 알림 설정, 장기 계약 할인 활용이 대표적인 절감 전략입니다.",
-        },
-      },
-    ],
+    })),
   };
 
   return (
@@ -151,91 +172,42 @@ export default async function PricePage({ params }: PageProps) {
             {platform.name} 가격 및 요금 정리 (2026)
           </h1>
           <p className="mt-3 text-slate-300">
-            {platform.name}의 요금 구조와 무료/유료 선택 기준을 빠르게 확인하세요.
+            {platform.name}의 요금 구조를 실제 운영 기준으로 해석해, 무료 시작부터 유료 확장까지 어떤 선택이 합리적인지
+            단계별로 설명합니다.
           </p>
         </header>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">Extended Pricing Explanation</h2>
-          <p className="mt-3 text-emerald-300">기본 요금 정보: {platform.pricing}</p>
-          <p className="mt-3 text-slate-300">
-            월간 총비용은 요금제 자체보다 사용량 분포와 고급 기능 사용 빈도에서 크게 갈립니다. 무료 플랜은 검증에 좋지만
-            운영 단계에서는 예산 상한, 팀별 정책, 자동 알림을 함께 설계해야 비용을 안정적으로 관리할 수 있습니다.
+          <h2 className="text-2xl font-semibold">Detailed Pricing Explanation</h2>
+          <p className="mt-4 text-emerald-300">기준 요금 정보: {platform.pricing}</p>
+          <p className="mt-4 text-slate-300">
+            실제 총비용은 표면 요금보다 사용 패턴의 영향을 더 크게 받습니다. 같은 플랫폼을 쓰더라도 요청 길이, 피크 시간대,
+            팀 규모, 고급 기능 사용률에 따라 월간 비용이 크게 달라질 수 있습니다. 따라서 요금제를 선택할 때는 먼저 업무를
+            난이도별로 분해하고, 각각에 맞는 모델 정책을 정한 뒤, 해당 정책이 월간 예산 범위에 들어오는지 검증하는 절차가
+            필요합니다. 초기에는 보수적으로 시작해 데이터가 쌓이면 최적화하는 방식이 가장 안정적입니다.
           </p>
         </section>
 
         <div className="ad-slot-placeholder" />
 
-        <section className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">Free vs Paid 비교</h2>
-          <table className="mt-4 min-w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-700 text-slate-300">
-                <th className="px-3 py-2 font-medium">구분</th>
-                <th className="px-3 py-2 font-medium">Free</th>
-                <th className="px-3 py-2 font-medium">Paid</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-slate-800">
-                <td className="px-3 py-3 text-slate-400">사용 한도</td>
-                <td className="px-3 py-3">낮음 또는 제한적</td>
-                <td className="px-3 py-3">높음 또는 확장 가능</td>
-              </tr>
-              <tr className="border-b border-slate-800">
-                <td className="px-3 py-3 text-slate-400">모델/기능 접근</td>
-                <td className="px-3 py-3">기본 모델 위주</td>
-                <td className="px-3 py-3">고급 모델 및 추가 기능</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-3 text-slate-400">운영 안정성</td>
-                <td className="px-3 py-3">트래픽 상황에 영향 큼</td>
-                <td className="px-3 py-3">SLA/기업 옵션 선택 가능</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-
-        <section className="grid gap-6 md:grid-cols-2">
-          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-xl font-semibold">Pros & Cons</h2>
-            <h3 className="mt-4 text-sm font-semibold uppercase tracking-wide text-emerald-300">Pros</h3>
-            <ul className="mt-2 space-y-2 text-slate-300">
-              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">초기 진입 비용을 통제하기 쉽습니다.</li>
-              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">업무별 요금 최적화 전략을 세우기 좋습니다.</li>
-              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">규모 확장 시 플랜 전환 선택지가 존재합니다.</li>
-            </ul>
-          </article>
-          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-rose-300">Cons</h3>
-            <ul className="mt-2 space-y-2 text-slate-300">
-              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">사용량 급증 시 비용 예측이 어려워질 수 있습니다.</li>
-              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">관리 정책이 없으면 과금 누수가 발생할 수 있습니다.</li>
-              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">고성능 모델 의존도가 높으면 단가가 빠르게 상승합니다.</li>
-            </ul>
-          </article>
-        </section>
-
-        <section className="grid gap-6 md:grid-cols-2">
-          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-xl font-semibold">Who should use this?</h2>
-            <p className="mt-3 text-slate-300">
-              비용 통제가 핵심인 팀, 무료 플랜에서 유료 전환 타이밍을 판단해야 하는 운영 조직에 적합합니다.
-            </p>
-          </article>
-          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-xl font-semibold">Who should avoid this?</h2>
-            <p className="mt-3 text-slate-300">
-              가격보다 성능만 최우선으로 선택하는 프로젝트, 혹은 비교 없이 단일 벤더를 고정한 조직에는 우선순위가 낮습니다.
-            </p>
-          </article>
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-2xl font-semibold">Breakdown of Plan Tiers</h2>
+          <div className="mt-4 grid gap-4">
+            {planTiers.map((tier) => (
+              <article key={tier.tier} className="rounded-lg border border-slate-700 bg-slate-950 p-4">
+                <h3 className="text-lg font-semibold text-slate-100">{tier.tier}</h3>
+                <p className="mt-2 text-slate-300">{tier.summary}</p>
+                <p className="mt-2 text-slate-400">{tier.details}</p>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">Detailed Use-Case Scenarios</h2>
+          <h2 className="text-2xl font-semibold">Discount Strategies</h2>
           <ul className="mt-4 grid gap-3 text-slate-300">
-            {useCases.map((item) => (
-              <li key={item} className="rounded-md border border-slate-700 bg-slate-950 px-3 py-3">
+            {discountStrategies.map((item) => (
+              <li key={item} className="rounded-md border border-slate-700 bg-slate-950 px-4 py-3">
                 {item}
               </li>
             ))}
@@ -245,31 +217,29 @@ export default async function PricePage({ params }: PageProps) {
         <div className="ad-slot-placeholder" />
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">관련 비교 페이지</h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {relatedComparePages.map((item) => (
-              <Link
-                key={item.slug}
-                href={`/compare/${item.slug}`}
-                className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 hover:border-slate-500"
-              >
-                {item.label}
-              </Link>
+          <h2 className="text-2xl font-semibold">Pricing FAQ</h2>
+          <div className="mt-4 grid gap-4">
+            {faqItems.map((item) => (
+              <article key={item.question} className="rounded-lg border border-slate-700 bg-slate-950 p-4">
+                <h3 className="text-base font-semibold text-slate-100">{item.question}</h3>
+                <p className="mt-2 text-slate-300">{item.answer}</p>
+              </article>
             ))}
           </div>
         </section>
 
         <section className="rounded-2xl border border-cyan-400/40 bg-cyan-400/10 p-6">
-          <h2 className="text-xl font-semibold">Call-to-Action</h2>
+          <h2 className="text-2xl font-semibold">Call-to-Action</h2>
           <p className="mt-3 text-slate-200">
-            가격 기준으로 후보를 좁혔다면 비교 페이지로 이동해 기능 적합성까지 함께 검토하고 최종 선택을 완료하세요.
+            가격만으로 결정하기 어렵다면 비교 페이지에서 기능 적합성까지 함께 확인하고, 최종적으로 공식 사이트에서 최신 플랜을
+            검증한 뒤 도입을 확정하세요.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link
               href={`/platform/${platform.id}`}
               className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-200"
             >
-              플랫폼 상세 보기
+              {platform.name} 플랫폼 가이드 보기
             </Link>
             <a
               href={platform.links.website}
@@ -277,13 +247,13 @@ export default async function PricePage({ params }: PageProps) {
               rel="noreferrer"
               className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-100 hover:border-slate-500"
             >
-              공식 사이트 방문
+              공식 가격 페이지 확인
             </a>
           </div>
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">Related Articles</h2>
+          <h2 className="text-2xl font-semibold">Related Articles</h2>
           <div className="mt-4 grid gap-2">
             {relatedArticles.slice(0, 3).map((article) => (
               <Link
@@ -292,6 +262,17 @@ export default async function PricePage({ params }: PageProps) {
                 className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 hover:border-slate-500"
               >
                 {article.label}
+              </Link>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {relatedComparePages.map((item) => (
+              <Link
+                key={item.slug}
+                href={`/compare/${item.slug}`}
+                className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 hover:border-slate-500"
+              >
+                {item.label}
               </Link>
             ))}
           </div>

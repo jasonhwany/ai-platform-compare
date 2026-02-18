@@ -77,15 +77,15 @@ export default async function ComparePage({ params }: PageProps) {
   }
 
   const relatedArticles = [
-    { href: `/platform/${pair.a.id}`, label: `${pair.a.name} 상세 가이드` },
-    { href: `/platform/${pair.b.id}`, label: `${pair.b.name} 상세 가이드` },
+    { href: `/platform/${pair.a.id}`, label: `${pair.a.name} 플랫폼 분석` },
+    { href: `/platform/${pair.b.id}`, label: `${pair.b.name} 플랫폼 분석` },
     { href: `/price/${pair.a.id}`, label: `${pair.a.name} 가격 전략` },
   ];
 
-  const useCases = [
-    "신규 서비스 검토 단계: 두 플랫폼의 성능/비용 균형을 빠르게 판단",
-    "기존 스택 교체 검토: 이전 비용과 전환 비용까지 비교해 리스크 최소화",
-    "팀 단위 표준화: 조직 공통 모델을 선정해 운영 복잡도를 줄임",
+  const summaryPoints = [
+    `${pair.a.name}는 ${pair.a.category} 관점에서 ${pair.a.bestFor} 같은 사용 케이스에 강점을 보입니다.`,
+    `${pair.b.name}는 ${pair.b.category} 환경에서 ${pair.b.bestFor} 같은 팀 운영 시나리오에 적합한 선택지입니다.`,
+    "가격 비교는 단순 월 구독비가 아니라 실제 요청량, 사용자 수, 고급 기능 사용 비율까지 포함해 판단해야 정확합니다.",
   ];
 
   const breadcrumbSchema = {
@@ -114,34 +114,34 @@ export default async function ComparePage({ params }: PageProps) {
     mainEntity: [
       {
         "@type": "Question",
-        name: `${pair.a.name}와 ${pair.b.name} 중 가격이 더 유리한 쪽은 어디인가요?`,
+        name: `${pair.a.name}와 ${pair.b.name} 중 어떤 서비스가 입문자에게 유리한가요?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: "실제 비용은 사용량, 기능 범위, 팀 규모에 따라 달라지므로 기본 요금 문구와 사용 패턴을 함께 비교해야 정확합니다.",
+          text: "온보딩 난이도, 기본 UI, 기본 요금 구조를 함께 보면 입문자 적합도를 빠르게 판단할 수 있습니다.",
         },
       },
       {
         "@type": "Question",
-        name: `${pair.a.name} vs ${pair.b.name} 비교 시 가장 중요한 기준은 무엇인가요?`,
+        name: `${pair.a.name} vs ${pair.b.name} 비교에서 가격 외 필수 기준은 무엇인가요?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: "가격 외에도 모델 품질, 응답 지연, 생태계 연동, 보안 요구사항을 함께 평가하는 것이 좋습니다.",
+          text: "성능 안정성, 기능 확장성, 운영 보안 요건 충족 여부를 동시에 비교해야 장기 선택 리스크를 줄일 수 있습니다.",
         },
       },
       {
         "@type": "Question",
-        name: "두 플랫폼의 무료 플랜만으로도 충분한가요?",
+        name: "예산이 제한된 팀은 어떻게 선택하는 것이 좋나요?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "실험 단계는 가능하지만 운영 트래픽이 증가하면 유료 전환과 비용 통제가 필요합니다.",
+          text: "초기에는 무료/저비용 구간에서 파일럿을 진행하고, 핵심 성능이 필요한 작업만 상위 요금으로 분리하는 전략이 유리합니다.",
         },
       },
       {
         "@type": "Question",
-        name: "비용 절감을 위해 어떤 비교 전략이 효과적인가요?",
+        name: "최종 선택 전에 반드시 확인해야 할 항목은 무엇인가요?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "업무를 난이도별로 분리해 저비용 모델과 고성능 모델을 혼합 사용하면 전체 단가를 낮출 수 있습니다.",
+          text: "실제 사용 시나리오 기반 비용 추정, 품질 테스트, 팀 운영 정책을 점검한 뒤 선택해야 재도입 비용을 줄일 수 있습니다.",
         },
       },
     ],
@@ -155,9 +155,26 @@ export default async function ComparePage({ params }: PageProps) {
             {pair.a.name} vs {pair.b.name}
           </h1>
           <p className="mt-3 text-slate-300">
-            두 플랫폼의 가격, 핵심 기능, 추천 용도를 한눈에 비교하세요.
+            두 플랫폼의 가격, 기능, 운영 관점 차이를 실제 도입 의사결정 흐름에 맞춰 정리했습니다.
           </p>
         </header>
+
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-2xl font-semibold">Comparison Summary</h2>
+          <ul className="mt-4 grid gap-3 text-slate-300">
+            {summaryPoints.map((item) => (
+              <li key={item} className="rounded-md border border-slate-700 bg-slate-950 px-4 py-3">
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-slate-300">
+            실제 프로젝트에서는 "어떤 기능이 더 많나"보다 "우리 팀 목표를 더 낮은 리스크로 달성하는가"가 훨씬 중요합니다.
+            따라서 이 비교 페이지는 단순 스펙 나열보다 운영 안정성과 비용 지속 가능성 중심으로 읽는 것이 좋습니다.
+          </p>
+        </section>
+
+        <div className="ad-slot-placeholder" />
 
         <section className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900 p-4">
           <table className="min-w-full text-left text-sm">
@@ -170,9 +187,9 @@ export default async function ComparePage({ params }: PageProps) {
             </thead>
             <tbody>
               <tr className="border-b border-slate-800">
-                <td className="px-3 py-3 text-slate-400">Tagline</td>
-                <td className="px-3 py-3">{pair.a.tagline}</td>
-                <td className="px-3 py-3">{pair.b.tagline}</td>
+                <td className="px-3 py-3 text-slate-400">Category</td>
+                <td className="px-3 py-3">{pair.a.category}</td>
+                <td className="px-3 py-3">{pair.b.category}</td>
               </tr>
               <tr className="border-b border-slate-800">
                 <td className="px-3 py-3 text-slate-400">Pricing</td>
@@ -180,138 +197,86 @@ export default async function ComparePage({ params }: PageProps) {
                 <td className="px-3 py-3 text-emerald-300">{pair.b.pricing}</td>
               </tr>
               <tr className="border-b border-slate-800">
-                <td className="px-3 py-3 text-slate-400">Category</td>
-                <td className="px-3 py-3">{pair.a.category}</td>
-                <td className="px-3 py-3">{pair.b.category}</td>
-              </tr>
-              <tr className="border-b border-slate-800">
                 <td className="px-3 py-3 text-slate-400">Best For</td>
                 <td className="px-3 py-3">{pair.a.bestFor}</td>
                 <td className="px-3 py-3">{pair.b.bestFor}</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-3 align-top text-slate-400">Highlights</td>
+                <td className="px-3 py-3">
+                  <ul className="space-y-2">
+                    {pair.a.highlights.map((item) => (
+                      <li key={`a-${item}`} className="rounded-md border border-slate-700 bg-slate-950 px-2 py-1">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td className="px-3 py-3">
+                  <ul className="space-y-2">
+                    {pair.b.highlights.map((item) => (
+                      <li key={`b-${item}`} className="rounded-md border border-slate-700 bg-slate-950 px-2 py-1">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
               </tr>
             </tbody>
           </table>
         </section>
 
-        <div className="ad-slot-placeholder" />
-
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">Extended Pricing Explanation</h2>
-          <p className="mt-3 text-slate-300">
-            동일 사용량 기준으로 비교하면 고정 구독비보다 요청당 과금 구조가 총비용에 더 큰 영향을 미치는 경우가 많습니다.
-            또한 팀 확장 시에는 좌석비, 관리 기능, API 호출량을 함께 계산해야 실제 운영비를 정확히 예측할 수 있습니다.
-          </p>
-        </section>
-
-        <section className="grid gap-6 md:grid-cols-2">
+        <section className="grid gap-6 md:grid-cols-3">
           <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-xl font-semibold">Pros & Cons</h2>
-            <h3 className="mt-4 text-sm font-semibold uppercase tracking-wide text-emerald-300">{pair.a.name} Pros</h3>
-            <ul className="mt-2 space-y-2 text-slate-300">
-              {pair.a.highlights.map((item) => (
-                <li key={`a-${item}`} className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <h3 className="mt-4 text-sm font-semibold uppercase tracking-wide text-rose-300">{pair.a.name} Cons</h3>
-            <p className="mt-2 text-slate-300">비용 효율은 사용 패턴 최적화 여부에 크게 좌우됩니다.</p>
-          </article>
-          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-emerald-300">{pair.b.name} Pros</h3>
-            <ul className="mt-2 space-y-2 text-slate-300">
-              {pair.b.highlights.map((item) => (
-                <li key={`b-${item}`} className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <h3 className="mt-4 text-sm font-semibold uppercase tracking-wide text-rose-300">{pair.b.name} Cons</h3>
-            <p className="mt-2 text-slate-300">고급 기능 사용 시 예상보다 빠르게 비용이 증가할 수 있습니다.</p>
-          </article>
-        </section>
-
-        <section className="grid gap-6 md:grid-cols-2">
-          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-xl font-semibold">Who should use this?</h2>
+            <h2 className="text-xl font-semibold">Best for beginners</h2>
             <p className="mt-3 text-slate-300">
-              도입 후보 2개를 최종 압축해야 하는 팀, 비용/성능 밸런스를 데이터로 비교하려는 제품 조직에 적합합니다.
+              입문자는 학습 곡선과 초기 비용이 낮은 쪽을 선택하는 것이 좋습니다. 무료 구간에서 빠르게 반복 실험이 가능한
+              플랫폼이 첫 선택으로 유리합니다.
             </p>
           </article>
           <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-xl font-semibold">Who should avoid this?</h2>
+            <h2 className="text-xl font-semibold">Best for professionals</h2>
             <p className="mt-3 text-slate-300">
-              이미 단일 플랫폼으로 표준화가 끝났거나, 비교 없이 즉시 실행이 필요한 단기 프로젝트에는 우선순위가 낮습니다.
+              전문 팀은 품질 일관성, 확장 API, 운영 정책 통합 능력을 우선 확인해야 합니다. 중장기 운영을 고려하면 관리 기능의
+              완성도가 의사결정에 큰 영향을 줍니다.
+            </p>
+          </article>
+          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="text-xl font-semibold">Best for budget users</h2>
+            <p className="mt-3 text-slate-300">
+              예산 중심 사용자라면 요청 단가와 무료 한도를 함께 보고, 고급 기능을 부분 적용하는 하이브리드 전략이 가능한
+              플랫폼을 선택하는 것이 좋습니다.
             </p>
           </article>
         </section>
 
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">Detailed Use-Case Scenarios</h2>
-          <ul className="mt-4 grid gap-3 text-slate-300">
-            {useCases.map((item) => (
-              <li key={item} className="rounded-md border border-slate-700 bg-slate-950 px-3 py-3">
-                {item}
-              </li>
-            ))}
-          </ul>
-        </section>
-
         <div className="ad-slot-placeholder" />
-
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">관련 페이지</h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link
-              href={`/platform/${pair.a.id}`}
-              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 hover:border-slate-500"
-            >
-              {pair.a.name} 상세 페이지
-            </Link>
-            <Link
-              href={`/platform/${pair.b.id}`}
-              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 hover:border-slate-500"
-            >
-              {pair.b.name} 상세 페이지
-            </Link>
-            <Link
-              href={`/price/${pair.a.id}`}
-              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 hover:border-slate-500"
-            >
-              {pair.a.name} 가격 페이지
-            </Link>
-            <Link
-              href={`/price/${pair.b.id}`}
-              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 hover:border-slate-500"
-            >
-              {pair.b.name} 가격 페이지
-            </Link>
-          </div>
-        </section>
 
         <section className="rounded-2xl border border-cyan-400/40 bg-cyan-400/10 p-6">
-          <h2 className="text-xl font-semibold">Call-to-Action</h2>
+          <h2 className="text-2xl font-semibold">Final Recommendation</h2>
           <p className="mt-3 text-slate-200">
-            최종 선택 전 각 플랫폼의 가격 페이지를 확인해 실제 예산 시나리오를 검증하고, 바로 팀 표준안을 확정하세요.
+            최종 추천은 팀 목표에 따라 달라집니다. 빠른 실험과 가벼운 도입이 우선이면 초기 진입 장벽이 낮은 옵션이 유리하고,
+            장기 운영과 통제 가능성이 핵심이면 관리 기능이 성숙한 옵션이 유리합니다. 가장 안전한 선택은 두 후보 모두를
+            동일 시나리오로 1~2주 파일럿 테스트하고, 품질/비용/운영 난이도 점수를 기반으로 최종 결정을 내리는 방식입니다.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link
               href={`/price/${pair.a.id}`}
               className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-200"
             >
-              {pair.a.name} 가격 확인
+              {pair.a.name} 가격 보기
             </Link>
             <Link
               href={`/price/${pair.b.id}`}
               className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-200"
             >
-              {pair.b.name} 가격 확인
+              {pair.b.name} 가격 보기
             </Link>
           </div>
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">Related Articles</h2>
+          <h2 className="text-2xl font-semibold">Related Articles</h2>
           <div className="mt-4 grid gap-2">
             {relatedArticles.map((article) => (
               <Link
@@ -322,6 +287,20 @@ export default async function ComparePage({ params }: PageProps) {
                 {article.label}
               </Link>
             ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href={`/price/${pair.a.id}`}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 hover:border-slate-500"
+            >
+              {pair.a.name} 가격 페이지
+            </Link>
+            <Link
+              href={`/price/${pair.b.id}`}
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 hover:border-slate-500"
+            >
+              {pair.b.name} 가격 페이지
+            </Link>
           </div>
         </section>
 
