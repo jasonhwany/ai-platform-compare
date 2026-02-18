@@ -22,6 +22,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   );
 
+  const pricePages: MetadataRoute.Sitemap = platforms.map((platform) => ({
+    url: `${siteUrl}/price/${platform.id}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.85,
+  }));
+
   return [
     {
       url: siteUrl,
@@ -31,5 +38,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...platformPages,
     ...comparePages,
+    ...pricePages,
   ];
 }
