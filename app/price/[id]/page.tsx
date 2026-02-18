@@ -68,14 +68,33 @@ export default async function PricePage({ params }: PageProps) {
       const slug = [platform.id, item.id].sort().join("-vs-");
       return { slug, label: `${platform.name} vs ${item.name}` };
     })
-    .slice(0, 4);
+    .slice(0, 3);
+
+  const relatedArticles = [
+    { href: `/platform/${platform.id}`, label: `${platform.name} 플랫폼 상세` },
+    ...relatedComparePages.slice(0, 2).map((item) => ({
+      href: `/compare/${item.slug}`,
+      label: `${item.label} 비교 글`,
+    })),
+  ];
+
+  const useCases = [
+    "개인/소규모 팀: 무료 플랜 기반으로 초기 검증 후 선택적으로 유료 전환",
+    "성장 단계 스타트업: 기능별 모델 라우팅으로 성능과 단가를 동시에 관리",
+    "엔터프라이즈 파일럿: 부서별 사용량 상한과 알림으로 비용 폭증 리스크 차단",
+  ];
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-      { "@type": "ListItem", position: 2, name: "Price", item: `${siteUrl}/price/${platform.id}` },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Price",
+        item: `${siteUrl}/price/${platform.id}`,
+      },
       {
         "@type": "ListItem",
         position: 3,
@@ -126,7 +145,7 @@ export default async function PricePage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10 md:px-10">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-10 md:px-10">
         <header className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
             {platform.name} 가격 및 요금 정리 (2026)
@@ -137,20 +156,15 @@ export default async function PricePage({ params }: PageProps) {
         </header>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">Pricing Breakdown</h2>
+          <h2 className="text-xl font-semibold">Extended Pricing Explanation</h2>
           <p className="mt-3 text-emerald-300">기본 요금 정보: {platform.pricing}</p>
-          <ul className="mt-4 grid gap-2 text-slate-300">
-            <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-              과금 방식: 사용량 기반 또는 구독형 플랜 혼합
-            </li>
-            <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-              비용 핵심 변수: 요청량, 고급 모델 사용 비율, 팀 좌석 수
-            </li>
-            <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-              예산 관리: 월별 상한선과 API 사용량 모니터링 필수
-            </li>
-          </ul>
+          <p className="mt-3 text-slate-300">
+            월간 총비용은 요금제 자체보다 사용량 분포와 고급 기능 사용 빈도에서 크게 갈립니다. 무료 플랜은 검증에 좋지만
+            운영 단계에서는 예산 상한, 팀별 정책, 자동 알림을 함께 설계해야 비용을 안정적으로 관리할 수 있습니다.
+          </p>
         </section>
+
+        <div className="ad-slot-placeholder" />
 
         <section className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-xl font-semibold">Free vs Paid 비교</h2>
@@ -182,23 +196,53 @@ export default async function PricePage({ params }: PageProps) {
           </table>
         </section>
 
+        <section className="grid gap-6 md:grid-cols-2">
+          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="text-xl font-semibold">Pros & Cons</h2>
+            <h3 className="mt-4 text-sm font-semibold uppercase tracking-wide text-emerald-300">Pros</h3>
+            <ul className="mt-2 space-y-2 text-slate-300">
+              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">초기 진입 비용을 통제하기 쉽습니다.</li>
+              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">업무별 요금 최적화 전략을 세우기 좋습니다.</li>
+              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">규모 확장 시 플랜 전환 선택지가 존재합니다.</li>
+            </ul>
+          </article>
+          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-rose-300">Cons</h3>
+            <ul className="mt-2 space-y-2 text-slate-300">
+              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">사용량 급증 시 비용 예측이 어려워질 수 있습니다.</li>
+              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">관리 정책이 없으면 과금 누수가 발생할 수 있습니다.</li>
+              <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">고성능 모델 의존도가 높으면 단가가 빠르게 상승합니다.</li>
+            </ul>
+          </article>
+        </section>
+
+        <section className="grid gap-6 md:grid-cols-2">
+          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="text-xl font-semibold">Who should use this?</h2>
+            <p className="mt-3 text-slate-300">
+              비용 통제가 핵심인 팀, 무료 플랜에서 유료 전환 타이밍을 판단해야 하는 운영 조직에 적합합니다.
+            </p>
+          </article>
+          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="text-xl font-semibold">Who should avoid this?</h2>
+            <p className="mt-3 text-slate-300">
+              가격보다 성능만 최우선으로 선택하는 프로젝트, 혹은 비교 없이 단일 벤더를 고정한 조직에는 우선순위가 낮습니다.
+            </p>
+          </article>
+        </section>
+
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">저렴하게 쓰는 방법</h2>
-          <ul className="mt-4 grid gap-2 text-slate-300">
-            <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-              무료 플랜에서 프롬프트 품질을 먼저 검증한 후 유료 전환
-            </li>
-            <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-              복잡도 낮은 요청은 저비용 모델로 라우팅
-            </li>
-            <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-              월간 예산 알림과 사용량 대시보드로 초과 비용 방지
-            </li>
-            <li className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-              연간 결제/팀 계약 할인과 크레딧 프로모션 주기적 확인
-            </li>
+          <h2 className="text-xl font-semibold">Detailed Use-Case Scenarios</h2>
+          <ul className="mt-4 grid gap-3 text-slate-300">
+            {useCases.map((item) => (
+              <li key={item} className="rounded-md border border-slate-700 bg-slate-950 px-3 py-3">
+                {item}
+              </li>
+            ))}
           </ul>
         </section>
+
+        <div className="ad-slot-placeholder" />
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-xl font-semibold">관련 비교 페이지</h2>
@@ -215,22 +259,45 @@ export default async function PricePage({ params }: PageProps) {
           </div>
         </section>
 
-        <div className="flex flex-wrap gap-3">
-          <a
-            href={platform.links.website}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-200"
-          >
-            공식 사이트 방문
-          </a>
-          <Link
-            href={`/platform/${platform.id}`}
-            className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-200 hover:border-slate-500"
-          >
-            플랫폼 상세 보기
-          </Link>
-        </div>
+        <section className="rounded-2xl border border-cyan-400/40 bg-cyan-400/10 p-6">
+          <h2 className="text-xl font-semibold">Call-to-Action</h2>
+          <p className="mt-3 text-slate-200">
+            가격 기준으로 후보를 좁혔다면 비교 페이지로 이동해 기능 적합성까지 함께 검토하고 최종 선택을 완료하세요.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href={`/platform/${platform.id}`}
+              className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-200"
+            >
+              플랫폼 상세 보기
+            </Link>
+            <a
+              href={platform.links.website}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-100 hover:border-slate-500"
+            >
+              공식 사이트 방문
+            </a>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-xl font-semibold">Related Articles</h2>
+          <div className="mt-4 grid gap-2">
+            {relatedArticles.slice(0, 3).map((article) => (
+              <Link
+                key={article.href}
+                href={article.href}
+                className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 hover:border-slate-500"
+              >
+                {article.label}
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <div className="ad-slot-placeholder" />
       </div>
 
       <script

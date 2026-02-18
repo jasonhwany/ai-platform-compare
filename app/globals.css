@@ -24,3 +24,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.ad-slot-placeholder {
+  min-height: 120px;
+  border: 1px dashed rgb(71 85 105 / 0.8);
+  border-radius: 0.9rem;
+  background: linear-gradient(135deg, rgb(15 23 42 / 0.7), rgb(30 41 59 / 0.6));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.25rem 0;
+}
+
+.ad-slot-placeholder::before {
+  content: "Ad Slot Placeholder";
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(148 163 184 / 0.9);
+}
