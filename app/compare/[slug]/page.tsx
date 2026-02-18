@@ -200,17 +200,17 @@ export default async function ComparePage({ params }: PageProps) {
             </thead>
             <tbody>
               <tr className="border-b border-slate-800">
-                <td className="px-3 py-3 text-slate-400">Category</td>
+                <td className="px-3 py-3 text-slate-400">카테고리</td>
                 <td className="px-3 py-3">{pair.a.category}</td>
                 <td className="px-3 py-3">{pair.b.category}</td>
               </tr>
               <tr className="border-b border-slate-800">
-                <td className="px-3 py-3 text-slate-400">Pricing</td>
+                <td className="px-3 py-3 text-slate-400">요금</td>
                 <td className="px-3 py-3 text-emerald-300">{pair.a.pricing}</td>
                 <td className="px-3 py-3 text-emerald-300">{pair.b.pricing}</td>
               </tr>
               <tr>
-                <td className="px-3 py-3 text-slate-400">Best For</td>
+                <td className="px-3 py-3 text-slate-400">추천 대상</td>
                 <td className="px-3 py-3">{pair.a.bestFor}</td>
                 <td className="px-3 py-3">{pair.b.bestFor}</td>
               </tr>
@@ -220,15 +220,15 @@ export default async function ComparePage({ params }: PageProps) {
 
         <section className="grid gap-6 md:grid-cols-3">
           <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-xl font-semibold">Best for beginners</h2>
+            <h2 className="text-xl font-semibold">입문자에게 추천</h2>
             <p className="mt-3 text-slate-300">입문자라면 초기 설정과 학습 곡선이 낮은 플랫폼을 우선 선택하세요.</p>
           </article>
           <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-xl font-semibold">Best for professionals</h2>
+            <h2 className="text-xl font-semibold">전문가에게 추천</h2>
             <p className="mt-3 text-slate-300">전문 팀은 통제 기능, API 확장성, 품질 일관성을 가장 먼저 확인해야 합니다.</p>
           </article>
           <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-xl font-semibold">Best for budget users</h2>
+            <h2 className="text-xl font-semibold">예산 중심 사용자에게 추천</h2>
             <p className="mt-3 text-slate-300">예산 중심이면 저비용 모델 라우팅이 가능한 플랫폼이 장기적으로 유리합니다.</p>
           </article>
         </section>
@@ -236,10 +236,10 @@ export default async function ComparePage({ params }: PageProps) {
         <AdSlot id={`compare-${pair.slug}-mid`} label="Compare Mid Content Ad Slot" />
 
         <section className="rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-6">
-          <h2 className="text-2xl font-semibold">Final Recommendation Block</h2>
-          <p className="mt-3 text-slate-200">Best for: 빠른 실행을 원하는 팀은 {pair.a.name}, 안정적 확장을 원하는 팀은 {pair.b.name}</p>
+          <h2 className="text-2xl font-semibold">최종 추천 블록</h2>
+          <p className="mt-3 text-slate-200">추천 대상: 빠른 실행은 {pair.a.name}, 안정적 확장은 {pair.b.name}</p>
           <p className="mt-3 text-lg font-bold text-emerald-200">
-            Recommended: 두 플랫폼 모두 파일럿 테스트 후, 비용/품질 점수가 높은 쪽으로 즉시 전환하세요.
+            추천 요약: 두 플랫폼을 파일럿으로 검증한 뒤 비용/품질 점수가 높은 쪽으로 전환하세요.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <TrackedLink
@@ -251,7 +251,7 @@ export default async function ComparePage({ params }: PageProps) {
                 compareSlug: pair.slug,
               }}
             >
-              Compare Pricing for {pair.a.name}
+              {pair.a.name} 요금 비교하기
             </TrackedLink>
             <TrackedLink
               href={`/price/${pair.b.id}`}
@@ -262,13 +262,13 @@ export default async function ComparePage({ params }: PageProps) {
                 compareSlug: pair.slug,
               }}
             >
-              Compare Pricing for {pair.b.name}
+              {pair.b.name} 요금 비교하기
             </TrackedLink>
           </div>
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-semibold">Related Articles</h2>
+          <h2 className="text-2xl font-semibold">관련 글</h2>
           <div className="mt-4 grid gap-2">
             {relatedArticles.map((article) => (
               <Link
@@ -282,13 +282,13 @@ export default async function ComparePage({ params }: PageProps) {
           </div>
           <div className="mt-4 grid gap-2 text-sm md:grid-cols-3">
             <Link href="/recommend?goal=blog&budget=under20&skill=beginner" className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-200 hover:border-slate-500">
-              Blog Starter Stack
+              블로그 입문 조합
             </Link>
             <Link href="/recommend?goal=video&budget=flexible&skill=intermediate" className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-200 hover:border-slate-500">
-              Video Growth Stack
+              영상 성장 조합
             </Link>
             <Link href="/recommend?goal=design&budget=free&skill=beginner" className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-200 hover:border-slate-500">
-              Design Free Stack
+              디자인 무료 조합
             </Link>
           </div>
         </section>

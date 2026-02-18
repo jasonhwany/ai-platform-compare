@@ -1,20 +1,20 @@
 import type { MetadataRoute } from "next";
-import { platforms } from "./data/platforms";
+import { providers } from "./data/providers";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-platform-compare.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  const platformPages: MetadataRoute.Sitemap = platforms.map((platform) => ({
+  const platformPages: MetadataRoute.Sitemap = providers.map((platform) => ({
     url: `${siteUrl}/platform/${platform.id}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.8,
   }));
 
-  const comparePages: MetadataRoute.Sitemap = platforms.flatMap((a, i) =>
-    platforms.slice(i + 1).map((b) => ({
+  const comparePages: MetadataRoute.Sitemap = providers.flatMap((a, i) =>
+    providers.slice(i + 1).map((b) => ({
       url: `${siteUrl}/compare/${a.id}-vs-${b.id}`,
       lastModified: now,
       changeFrequency: "weekly",
@@ -22,7 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   );
 
-  const pricePages: MetadataRoute.Sitemap = platforms.map((platform) => ({
+  const pricePages: MetadataRoute.Sitemap = providers.map((platform) => ({
     url: `${siteUrl}/price/${platform.id}`,
     lastModified: now,
     changeFrequency: "weekly",

@@ -1,4 +1,4 @@
-import { platforms } from "./platforms";
+import { providers } from "./providers";
 
 export type BestBadge =
   | "Best Overall"
@@ -74,7 +74,7 @@ export type RecommendedStack = {
 };
 
 const findName = (id: string) =>
-  platforms.find((platform) => platform.id === id)?.name ?? id;
+  providers.find((provider) => provider.id === id)?.name ?? id;
 
 const toCompareHref = (a: string, b: string) =>
   `/compare/${[a, b].sort().join("-vs-")}`;

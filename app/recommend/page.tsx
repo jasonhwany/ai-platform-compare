@@ -27,8 +27,8 @@ export async function generateMetadata({ searchParams }: RecommendPageProps): Pr
 
   if (goal && budget && skill) {
     return {
-      title: `AI Stack Recommendation: ${goal} / ${budget} / ${skill} | AI Platform Compare`,
-      description: `${goal} 목적과 ${budget} 예산, ${skill} 숙련도에 맞춘 AI 스택 추천 결과를 확인하세요.`,
+      title: `AI 스택 추천: ${goal} / ${budget} / ${skill} | AI Platform Compare`,
+      description: `${goal} 목표와 ${budget} 예산, ${skill} 숙련도에 맞는 AI 스택 추천 결과를 확인하세요.`,
       alternates: {
         canonical: `/recommend?goal=${toParamGoal(goal)}&budget=${toParamBudget(budget)}&skill=${toParamSkill(skill)}`,
       },
@@ -36,8 +36,8 @@ export async function generateMetadata({ searchParams }: RecommendPageProps): Pr
   }
 
   return {
-    title: "AI Stack Recommender | AI Platform Compare",
-    description: "3-step wizard로 목표, 예산, 숙련도에 맞는 AI 도구 스택을 추천받으세요.",
+    title: "AI 스택 추천기 | AI Platform Compare",
+    description: "3단계 질문으로 목표, 예산, 숙련도에 맞는 AI 도구 스택을 추천받으세요.",
     alternates: { canonical: "/recommend" },
   };
 }

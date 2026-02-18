@@ -12,7 +12,7 @@ import {
   toParamGoal,
   toParamSkill,
 } from "../data/recommendation";
-import { platforms } from "../data/platforms";
+import { providers } from "../data/providers";
 import { track } from "../lib/track";
 
 type RecommendClientProps = {
@@ -36,7 +36,7 @@ export default function RecommendClient({
   const [goal, setGoal] = useState<PrimaryGoal | null>(initialGoal);
   const [budget, setBudget] = useState<BudgetLevel | null>(initialBudget);
   const [skill, setSkill] = useState<SkillLevel | null>(initialSkill);
-  const [copyLabel, setCopyLabel] = useState("Copy share link");
+  const [copyLabel, setCopyLabel] = useState("공유 링크 복사");
 
   const recommendations = useMemo(() => {
     if (!goal || !budget || !skill) return [];
@@ -74,12 +74,12 @@ export default function RecommendClient({
     const url = `${window.location.origin}${sharePath}`;
     try {
       await navigator.clipboard.writeText(url);
-      setCopyLabel("Copied");
+      setCopyLabel("복사 완료");
       window.history.replaceState(null, "", sharePath);
-      setTimeout(() => setCopyLabel("Copy share link"), 1500);
+      setTimeout(() => setCopyLabel("공유 링크 복사"), 1500);
     } catch {
-      setCopyLabel("Copy failed");
-      setTimeout(() => setCopyLabel("Copy share link"), 1500);
+      setCopyLabel("복사 실패");
+      setTimeout(() => setCopyLabel("공유 링크 복사"), 1500);
     }
   };
 
@@ -88,7 +88,7 @@ export default function RecommendClient({
     setGoal(null);
     setBudget(null);
     setSkill(null);
-    setCopyLabel("Copy share link");
+    setCopyLabel("공유 링크 복사");
     if (typeof window !== "undefined") {
       window.history.replaceState(null, "", "/recommend");
     }
@@ -113,18 +113,18 @@ export default function RecommendClient({
     <main className="min-h-screen bg-slate-950 text-slate-100">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10 md:px-10">
         <header className="rounded-2xl border border-slate-800 bg-slate-900 p-7">
-          <p className="text-sm font-medium uppercase tracking-widest text-emerald-400">AI Stack Recommender</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">Get Your Best AI Stack in 3 Steps</h1>
+          <p className="text-sm font-medium uppercase tracking-widest text-emerald-400">AI 스택 추천기</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">3단계로 최적의 AI 스택 찾기</h1>
           <p className="mt-3 text-slate-300">목표, 예산, 숙련도를 선택하면 바로 실행 가능한 플랫폼 조합을 추천합니다.</p>
         </header>
 
         {step <= 3 && (
           <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <p className="text-sm text-slate-400">Step {step} / 3</p>
+            <p className="text-sm text-slate-400">{step} / 3 단계</p>
 
             {step === 1 && (
               <div className="mt-4">
-                <h2 className="text-xl font-semibold">Primary Goal</h2>
+                <h2 className="text-xl font-semibold">주요 목표</h2>
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   {goals.map((item) => (
                     <button
@@ -142,7 +142,7 @@ export default function RecommendClient({
 
             {step === 2 && (
               <div className="mt-4">
-                <h2 className="text-xl font-semibold">Budget Level</h2>
+                <h2 className="text-xl font-semibold">예산 수준</h2>
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   {budgets.map((item) => (
                     <button
@@ -160,7 +160,7 @@ export default function RecommendClient({
 
             {step === 3 && (
               <div className="mt-4">
-                <h2 className="text-xl font-semibold">Skill Level</h2>
+                <h2 className="text-xl font-semibold">숙련도</h2>
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   {skills.map((item) => (
                     <button
@@ -182,9 +182,9 @@ export default function RecommendClient({
           <section className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-2xl font-semibold">Recommended AI Stacks</h2>
+                <h2 className="text-2xl font-semibold">추천 AI 스택</h2>
                 <p className="mt-2 text-slate-200">
-                  Based on your profile: <span className="font-semibold">{goal}</span> / <span className="font-semibold">{budget}</span> / <span className="font-semibold">{skill}</span>
+                  선택 기준: <span className="font-semibold">{goal}</span> / <span className="font-semibold">{budget}</span> / <span className="font-semibold">{skill}</span>
                 </p>
               </div>
               <button
@@ -204,7 +204,7 @@ export default function RecommendClient({
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     {stack.platformIds.map((id) => {
-                      const platform = platforms.find((item) => item.id === id);
+                      const platform = providers.find((item) => item.id === id);
                       if (!platform) return null;
                       return (
                         <div key={id} className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm">
@@ -242,7 +242,7 @@ export default function RecommendClient({
                       href="/"
                       className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-bold text-slate-100 hover:border-slate-500"
                     >
-                      Go Compare on Homepage
+                      홈에서 직접 비교하기
                     </Link>
                   </div>
                 </article>
@@ -254,7 +254,7 @@ export default function RecommendClient({
               onClick={reset}
               className="mt-6 rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-100 hover:border-slate-500"
             >
-              Restart Recommendation Wizard
+              추천 다시 시작
             </button>
           </section>
         )}

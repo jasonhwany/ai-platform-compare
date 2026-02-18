@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Platform Compare
 
-## Getting Started
+Next.js(App Router) 기반 AI 공급자 비교/추천 서비스입니다.
 
-First, run the development server:
+## 개발 실행
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 프로덕션 빌드
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 데이터 운영 가이드
 
-## Learn More
+### 공급자 데이터 수정 위치
+- 파일: `app/data/providers.ts`
+- 단일 소스 데이터 구조:
+  - `id`, `name`, `website`, `category_tags`, `pricing`, `last_verified`
+  - `capabilities`, `limits`, `integrations`, `best_for`
 
-To learn more about Next.js, take a look at the following resources:
+### Last verified 정책
+- `last_verified`는 `YYYY-MM-DD` 형식으로 관리합니다.
+- 정책:
+  1. 요금/정책/연동 정보 수정 시 해당 공급자의 `last_verified`를 반드시 업데이트
+  2. 값이 불명확하면 `unknown`/`null`로 두고 UI에 `—` + 툴팁(`Unknown / not verified`)로 노출
+  3. 추정치 입력 금지, 공식 문서 링크(`pricing.api_pricing_link`) 우선 유지
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 홈 비교표 반영 규칙
+- 홈 카드와 비교 테이블은 모두 `providers.ts`를 기준으로 렌더링됩니다.
+- `/?compare=id1,id2,id3` 쿼리로 비교 상태를 공유할 수 있습니다.

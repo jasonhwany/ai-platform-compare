@@ -133,7 +133,7 @@ export default async function PricePage({ params }: PageProps) {
         </header>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-semibold">Detailed Pricing Explanation</h2>
+          <h2 className="text-2xl font-semibold">상세 요금 해설</h2>
           <p className="mt-4 text-emerald-300">기준 요금 정보: {platform.pricing}</p>
           <p className="mt-4 text-slate-300">실제 월간 비용은 요청량, 고급 기능 비율, 팀 규모에 따라 달라집니다.</p>
         </section>
@@ -141,7 +141,7 @@ export default async function PricePage({ params }: PageProps) {
         <AdSlot id={`price-${platform.id}-hero`} label="Price Hero Ad Slot" />
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-semibold">Breakdown of Plan Tiers</h2>
+          <h2 className="text-2xl font-semibold">요금제 구간 정리</h2>
           <div className="mt-4 grid gap-3 text-slate-300">
             <div className="rounded-lg border border-slate-700 bg-slate-950 p-4">Free/Trial: 파일럿 검증 단계</div>
             <div className="rounded-lg border border-slate-700 bg-slate-950 p-4">Pro/Team: 실무 운영과 협업 단계</div>
@@ -150,7 +150,7 @@ export default async function PricePage({ params }: PageProps) {
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-semibold">Discount Strategies</h2>
+          <h2 className="text-2xl font-semibold">할인/절감 전략</h2>
           <ul className="mt-4 grid gap-2 text-slate-300">
             <li className="rounded-md border border-slate-700 bg-slate-950 px-4 py-3">저비용 모델 라우팅으로 평균 단가 절감</li>
             <li className="rounded-md border border-slate-700 bg-slate-950 px-4 py-3">예산 경고 설정으로 과금 급증 사전 차단</li>
@@ -161,7 +161,7 @@ export default async function PricePage({ params }: PageProps) {
         <AdSlot id={`price-${platform.id}-mid`} label="Price Mid Content Ad Slot" />
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-semibold">Pricing FAQ</h2>
+          <h2 className="text-2xl font-semibold">요금 FAQ</h2>
           <div className="mt-4 grid gap-3">
             {faqItems.map((item) => (
               <article key={item.question} className="rounded-lg border border-slate-700 bg-slate-950 p-4">
@@ -173,10 +173,10 @@ export default async function PricePage({ params }: PageProps) {
         </section>
 
         <section className="rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-6">
-          <h2 className="text-2xl font-semibold">Final Recommendation Block</h2>
-          <p className="mt-3 text-slate-200">Best for: 비용 효율을 유지하며 확장하려는 팀</p>
+          <h2 className="text-2xl font-semibold">최종 추천 블록</h2>
+          <p className="mt-3 text-slate-200">추천 대상: 비용 효율을 유지하며 확장하려는 팀</p>
           <p className="mt-3 text-lg font-bold text-emerald-200">
-            Recommended: {platform.name}는 무료 검증 후 유료 확장하는 단계형 도입 전략에 가장 적합합니다.
+            추천 요약: {platform.name}는 무료 검증 후 유료 확장하는 단계형 도입 전략에 가장 적합합니다.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <TrackedLink
@@ -187,7 +187,7 @@ export default async function PricePage({ params }: PageProps) {
                 platformId: platform.id,
               }}
             >
-              Compare Before You Subscribe
+              구독 전 먼저 비교하기
             </TrackedLink>
             <TrackedExternalLink
               href={platform.links.website}
@@ -200,7 +200,7 @@ export default async function PricePage({ params }: PageProps) {
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-semibold">Related Articles</h2>
+          <h2 className="text-2xl font-semibold">관련 글</h2>
           <div className="mt-4 grid gap-2">
             <Link href={`/platform/${platform.id}`} className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 hover:border-slate-500">
               {platform.name} 플랫폼 상세
@@ -213,13 +213,13 @@ export default async function PricePage({ params }: PageProps) {
           </div>
           <div className="mt-4 grid gap-2 text-sm md:grid-cols-3">
             <Link href="/recommend?goal=blog&budget=under20&skill=beginner" className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-200 hover:border-slate-500">
-              Blog Starter Stack
+              블로그 입문 조합
             </Link>
             <Link href="/recommend?goal=video&budget=flexible&skill=intermediate" className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-200 hover:border-slate-500">
-              Video Growth Stack
+              영상 성장 조합
             </Link>
             <Link href="/recommend?goal=design&budget=free&skill=beginner" className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-200 hover:border-slate-500">
-              Design Free Stack
+              디자인 무료 조합
             </Link>
           </div>
         </section>
