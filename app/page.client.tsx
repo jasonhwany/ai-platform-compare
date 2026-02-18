@@ -62,6 +62,17 @@ export default function HomeClient() {
               Find My Best AI Stack
             </Link>
           </div>
+          <div className="mt-4 grid gap-2 text-sm md:grid-cols-3">
+            <Link href="/recommend?goal=blog&budget=under20&skill=beginner" className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-slate-200 hover:border-slate-500">
+              Blog Starter Stack
+            </Link>
+            <Link href="/recommend?goal=video&budget=flexible&skill=intermediate" className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-slate-200 hover:border-slate-500">
+              Video Growth Stack
+            </Link>
+            <Link href="/recommend?goal=design&budget=free&skill=beginner" className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-slate-200 hover:border-slate-500">
+              Design Free Stack
+            </Link>
+          </div>
         </section>
 
         <section>

@@ -1,202 +1,52 @@
-"use client";
-
-import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import type { Metadata } from "next";
 import {
-  type BudgetLevel,
-  type PrimaryGoal,
-  type SkillLevel,
-  getRecommendedStacks,
-  getPlatformBestBadges,
+  parseBudgetParam,
+  parseGoalParam,
+  parseSkillParam,
+  toParamBudget,
+  toParamGoal,
+  toParamSkill,
 } from "../data/recommendation";
-import { platforms } from "../data/platforms";
-import { track } from "../lib/track";
+import RecommendClient from "./recommend-client";
 
-const goals: PrimaryGoal[] = ["Blog", "Video", "Design", "Automation", "Research"];
-const budgets: BudgetLevel[] = ["Free", "Under $20", "Flexible"];
-const skills: SkillLevel[] = ["Beginner", "Intermediate", "Advanced"];
+type SearchParams = {
+  goal?: string;
+  budget?: string;
+  skill?: string;
+};
 
-export default function RecommendPage() {
-  const [step, setStep] = useState(1);
-  const [goal, setGoal] = useState<PrimaryGoal | null>(null);
-  const [budget, setBudget] = useState<BudgetLevel | null>(null);
-  const [skill, setSkill] = useState<SkillLevel | null>(null);
+type RecommendPageProps = {
+  searchParams: Promise<SearchParams>;
+};
 
-  const recommendations = useMemo(() => {
-    if (!goal || !budget || !skill) return [];
-    return getRecommendedStacks(goal, budget, skill);
-  }, [goal, budget, skill]);
-  const lastTrackedSignatureRef = useRef<string | null>(null);
+export async function generateMetadata({ searchParams }: RecommendPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const goal = parseGoalParam(params.goal);
+  const budget = parseBudgetParam(params.budget);
+  const skill = parseSkillParam(params.skill);
 
-  useEffect(() => {
-    if (step !== 4 || !goal || !budget || !skill || recommendations.length === 0) return;
-    const signature = `${goal}-${budget}-${skill}-${recommendations.map((item) => item.id).join(",")}`;
-    if (lastTrackedSignatureRef.current === signature) return;
-    lastTrackedSignatureRef.current = signature;
+  if (goal && budget && skill) {
+    return {
+      title: `AI Stack Recommendation: ${goal} / ${budget} / ${skill} | AI Platform Compare`,
+      description: `${goal} 목적과 ${budget} 예산, ${skill} 숙련도에 맞춘 AI 스택 추천 결과를 확인하세요.`,
+      alternates: {
+        canonical: `/recommend?goal=${toParamGoal(goal)}&budget=${toParamBudget(budget)}&skill=${toParamSkill(skill)}`,
+      },
+    };
+  }
 
-    track("reco_complete", {
-      goal,
-      budget,
-      skill,
-      stackIds: recommendations.map((item) => item.id),
-    });
-  }, [step, goal, budget, skill, recommendations]);
-
-  const reset = () => {
-    setStep(1);
-    setGoal(null);
-    setBudget(null);
-    setSkill(null);
+  return {
+    title: "AI Stack Recommender | AI Platform Compare",
+    description: "3-step wizard로 목표, 예산, 숙련도에 맞는 AI 도구 스택을 추천받으세요.",
+    alternates: { canonical: "/recommend" },
   };
+}
 
-  return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10 md:px-10">
-        <header className="rounded-2xl border border-slate-800 bg-slate-900 p-7">
-          <p className="text-sm font-medium uppercase tracking-widest text-emerald-400">AI Stack Recommender</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">Get Your Best AI Stack in 3 Steps</h1>
-          <p className="mt-3 text-slate-300">목표, 예산, 숙련도를 선택하면 바로 실행 가능한 플랫폼 조합을 추천합니다.</p>
-        </header>
+export default async function RecommendPage({ searchParams }: RecommendPageProps) {
+  const params = await searchParams;
+  const goal = parseGoalParam(params.goal);
+  const budget = parseBudgetParam(params.budget);
+  const skill = parseSkillParam(params.skill);
 
-        {step <= 3 && (
-          <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <p className="text-sm text-slate-400">Step {step} / 3</p>
-
-            {step === 1 && (
-              <div className="mt-4">
-                <h2 className="text-xl font-semibold">Primary Goal</h2>
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
-                  {goals.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => {
-                        setGoal(item);
-                        setStep(2);
-                      }}
-                      className="rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-left font-semibold hover:border-emerald-400"
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div className="mt-4">
-                <h2 className="text-xl font-semibold">Budget Level</h2>
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
-                  {budgets.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => {
-                        setBudget(item);
-                        setStep(3);
-                      }}
-                      className="rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-left font-semibold hover:border-emerald-400"
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="mt-4">
-                <h2 className="text-xl font-semibold">Skill Level</h2>
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
-                  {skills.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => {
-                        setSkill(item);
-                        setStep(4);
-                      }}
-                      className="rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-left font-semibold hover:border-emerald-400"
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </section>
-        )}
-
-        {step === 4 && goal && budget && skill && (
-          <section className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-6">
-            <h2 className="text-2xl font-semibold">Recommended AI Stacks</h2>
-            <p className="mt-2 text-slate-200">
-              Based on your profile: <span className="font-semibold">{goal}</span> / <span className="font-semibold">{budget}</span> / <span className="font-semibold">{skill}</span>
-            </p>
-
-            <div className="mt-5 grid gap-4">
-              {recommendations.slice(0, 3).map((stack) => (
-                <article key={stack.id} className="rounded-xl border border-slate-700 bg-slate-950 p-5">
-                  <h3 className="text-lg font-bold text-emerald-300">{stack.title}</h3>
-                  <p className="mt-2 text-slate-300">{stack.summary}</p>
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {stack.platformIds.map((id) => {
-                      const platform = platforms.find((item) => item.id === id);
-                      if (!platform) return null;
-                      return (
-                        <div key={id} className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm">
-                          <p className="font-semibold text-slate-100">{platform.name}</p>
-                          <div className="mt-1 flex flex-wrap gap-1">
-                            {getPlatformBestBadges(id).slice(0, 2).map((badge) => (
-                              <span key={badge} className="rounded-full bg-amber-300/20 px-2 py-0.5 text-[10px] font-semibold text-amber-200">
-                                {badge}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <Link
-                      href={stack.cta.href}
-                      className="rounded-lg bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-200"
-                      onClick={() => {
-                        track("reco_cta_click", {
-                          goal,
-                          budget,
-                          skill,
-                          stackIds: recommendations.map((item) => item.id),
-                          recommendationId: stack.id,
-                          target: stack.cta.href,
-                        });
-                      }}
-                    >
-                      {stack.cta.label}
-                    </Link>
-                    <Link
-                      href="/"
-                      className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-bold text-slate-100 hover:border-slate-500"
-                    >
-                      Go Compare on Homepage
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={reset}
-              className="mt-6 rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-100 hover:border-slate-500"
-            >
-              Restart Recommendation Wizard
-            </button>
-          </section>
-        )}
-      </div>
-    </main>
-  );
+  return <RecommendClient initialGoal={goal} initialBudget={budget} initialSkill={skill} />;
 }

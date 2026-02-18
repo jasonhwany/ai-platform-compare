@@ -10,6 +10,45 @@ export type PrimaryGoal = "Blog" | "Video" | "Design" | "Automation" | "Research
 export type BudgetLevel = "Free" | "Under $20" | "Flexible";
 export type SkillLevel = "Beginner" | "Intermediate" | "Advanced";
 
+export function parseGoalParam(input?: string | null): PrimaryGoal | null {
+  const value = (input ?? "").toLowerCase();
+  if (value === "blog") return "Blog";
+  if (value === "video") return "Video";
+  if (value === "design") return "Design";
+  if (value === "automation") return "Automation";
+  if (value === "research") return "Research";
+  return null;
+}
+
+export function parseBudgetParam(input?: string | null): BudgetLevel | null {
+  const value = (input ?? "").toLowerCase();
+  if (value === "free") return "Free";
+  if (value === "under20") return "Under $20";
+  if (value === "flexible") return "Flexible";
+  return null;
+}
+
+export function parseSkillParam(input?: string | null): SkillLevel | null {
+  const value = (input ?? "").toLowerCase();
+  if (value === "beginner") return "Beginner";
+  if (value === "intermediate") return "Intermediate";
+  if (value === "advanced") return "Advanced";
+  return null;
+}
+
+export function toParamGoal(goal: PrimaryGoal): string {
+  return goal.toLowerCase();
+}
+
+export function toParamBudget(budget: BudgetLevel): string {
+  if (budget === "Under $20") return "under20";
+  return budget.toLowerCase();
+}
+
+export function toParamSkill(skill: SkillLevel): string {
+  return skill.toLowerCase();
+}
+
 export const bestBadgeByPlatform: Record<string, BestBadge[]> = {
   openai: ["Best Overall", "Best for Professionals"],
   anthropic: ["Best for Professionals"],
