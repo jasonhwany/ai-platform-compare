@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { platforms } from "./data/platforms";
+import { getPlatformBestBadges } from "./data/recommendation";
 
 const MAX_SELECTION = 3;
 
@@ -15,12 +17,8 @@ export default function HomeClient() {
 
   const togglePlatform = (id: string) => {
     setSelectedIds((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((item) => item !== id);
-      }
-      if (prev.length >= MAX_SELECTION) {
-        return prev;
-      }
+      if (prev.includes(id)) return prev.filter((item) => item !== id);
+      if (prev.length >= MAX_SELECTION) return prev;
       return [...prev, id];
     });
   };
@@ -49,6 +47,23 @@ export default function HomeClient() {
           </div>
         </header>
 
+        <section className="rounded-2xl border border-cyan-400/40 bg-cyan-400/10 p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-semibold">Try AI Stack Recommender</h2>
+              <p className="mt-1 text-sm text-slate-200">
+                Answer 3 quick questions and get a conversion-ready platform stack.
+              </p>
+            </div>
+            <Link
+              href="/recommend"
+              className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-cyan-200"
+            >
+              Find My Best AI Stack
+            </Link>
+          </div>
+        </section>
+
         <section>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-semibold">Top Platforms</h2>
@@ -61,6 +76,7 @@ export default function HomeClient() {
               const selected = selectedIds.includes(platform.id);
               const selectionLocked =
                 !selected && selectedIds.length >= MAX_SELECTION;
+              const bestBadges = getPlatformBestBadges(platform.id);
 
               return (
                 <article
@@ -92,6 +108,19 @@ export default function HomeClient() {
                     </div>
                   </div>
 
+                  {bestBadges.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {bestBadges.map((badge) => (
+                        <span
+                          key={badge}
+                          className="rounded-full bg-amber-300/20 px-2.5 py-1 text-xs font-semibold text-amber-200 ring-1 ring-amber-300/40"
+                        >
+                          {badge}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   <p className="mt-4 text-sm text-slate-300">
                     <span className="font-medium text-slate-100">Category:</span>{" "}
                     {platform.category}
@@ -117,14 +146,12 @@ export default function HomeClient() {
                   </ul>
 
                   <div className="mt-5 flex items-center justify-between gap-3">
-                    <a
-                      href={platform.links.website}
-                      target="_blank"
-                      rel="noreferrer"
+                    <Link
+                      href={`/platform/${platform.id}`}
                       className="text-sm text-cyan-300 hover:text-cyan-200"
                     >
-                      Visit website
-                    </a>
+                      Read conversion guide
+                    </Link>
                     <button
                       type="button"
                       onClick={() => togglePlatform(platform.id)}
@@ -184,22 +211,6 @@ export default function HomeClient() {
               </table>
             </div>
           )}
-        </section>
-
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">How to save money</h2>
-          <ul className="mt-4 grid gap-3 text-sm text-slate-300 md:grid-cols-3">
-            <li className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-              Start with free tiers for prompt validation before scaling.
-            </li>
-            <li className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-              Route simple tasks to lower-cost models and reserve premium models
-              for critical flows.
-            </li>
-            <li className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-              Monitor token usage weekly and enforce budget alerts per team.
-            </li>
-          </ul>
         </section>
       </div>
     </main>
