@@ -8,6 +8,7 @@ type PageProps = {
 };
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-platform-compare.vercel.app";
+const ogImage = `${siteUrl}/og-image.png`;
 
 const findPlatform = (id: string) =>
   platforms.find((platform) => platform.id === id);
@@ -27,11 +28,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const title = `${platform.name} 가격 | 2026 요금 및 무료 플랜 정리`;
+  const description = `${platform.name} 요금제, 무료 여부, 할인 방법 완전 정리`;
+  const url = `${siteUrl}/price/${platform.id}`;
+
   return {
-    title: `${platform.name} 가격 | 2026 요금 및 무료 플랜 정리`,
-    description: `${platform.name} 요금제, 무료 여부, 할인 방법 완전 정리`,
+    title,
+    description,
     alternates: {
       canonical: `/price/${platform.id}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "article",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: "AI Platform Compare" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
     },
   };
 }
@@ -44,32 +62,63 @@ export default async function PricePage({ params }: PageProps) {
     notFound();
   }
 
-  const faq = {
+  const relatedComparePages = platforms
+    .filter((item) => item.id !== platform.id)
+    .map((item) => {
+      const slug = [platform.id, item.id].sort().join("-vs-");
+      return { slug, label: `${platform.name} vs ${item.name}` };
+    })
+    .slice(0, 4);
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Price", item: `${siteUrl}/price/${platform.id}` },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: `${platform.name} 가격`,
+        item: `${siteUrl}/price/${platform.id}`,
+      },
+    ],
+  };
+
+  const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: [
       {
         "@type": "Question",
-        name: `${platform.name}는 무료로 사용할 수 있나요?`,
+        name: `${platform.name} 무료 플랜은 어떤 한계가 있나요?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `${platform.name}는 사용 목적에 따라 무료 체험 또는 무료 플랜이 제공될 수 있으며, 본격적인 운영 단계에서는 유료 요금제 검토가 필요합니다.`,
+          text: "요청량, 고급 기능 접근, 팀 관리 기능이 제한되는 경우가 많아 운영 단계에서는 유료 플랜 검토가 필요합니다.",
         },
       },
       {
         "@type": "Question",
-        name: `${platform.name} 비용을 줄이는 가장 쉬운 방법은 무엇인가요?`,
+        name: `${platform.name} 유료 플랜으로 전환해야 하는 기준은 무엇인가요?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: "작은 요청은 저비용 모델로 분리하고, 사용량 상한선과 월간 예산 경고를 설정하면 전체 비용을 크게 절감할 수 있습니다.",
+          text: "트래픽 증가, 응답 품질 요구, 팀 협업 기능 필요성이 커질 때 유료 플랜 전환이 합리적입니다.",
         },
       },
       {
         "@type": "Question",
-        name: `${platform.name} 할인 방법이 있나요?`,
+        name: `${platform.name}와 경쟁 플랫폼 가격을 어떻게 비교하면 좋나요?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: "연간 결제, 팀 단위 계약, 프로모션 크레딧, 파트너 마켓플레이스 혜택을 확인하면 실질 단가를 낮출 수 있습니다.",
+          text: "동일한 트래픽 시나리오에서 요청당 비용, 월 고정비, 기능 포함 범위를 함께 비교하면 정확합니다.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: `${platform.name} 비용을 낮추는 실전 방법은 무엇인가요?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "모델 라우팅, 프롬프트 최적화, 사용량 알림 설정, 장기 계약 할인 활용이 대표적인 절감 전략입니다.",
         },
       },
     ],
@@ -152,14 +201,18 @@ export default async function PricePage({ params }: PageProps) {
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold">핵심 기능 요약</h2>
-          <ul className="mt-4 grid gap-2 text-slate-300">
-            {platform.highlights.map((item) => (
-              <li key={item} className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-                {item}
-              </li>
+          <h2 className="text-xl font-semibold">관련 비교 페이지</h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {relatedComparePages.map((item) => (
+              <Link
+                key={item.slug}
+                href={`/compare/${item.slug}`}
+                className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 hover:border-slate-500"
+              >
+                {item.label}
+              </Link>
             ))}
-          </ul>
+          </div>
         </section>
 
         <div className="flex flex-wrap gap-3">
@@ -182,20 +235,11 @@ export default async function PricePage({ params }: PageProps) {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            name: `${platform.name} 가격 페이지`,
-            description: `${platform.name} 요금제, 무료 여부, 할인 방법 완전 정리`,
-            url: `${siteUrl}/price/${platform.id}`,
-          }),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
     </main>
   );
